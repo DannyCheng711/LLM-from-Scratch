@@ -11,14 +11,23 @@
 
 ---
 
+### Output
+
+```
+[TS] Training time: 7.71 minutes
+[TS] Peak memory: 15594.28 MB
+[TS] Longest token: b' accomplishment' length: 15
+```
+
+---
+
 ### Results
 
-- Training time: **~0.04 minutes (~2.4 seconds)**
-- Memory usage: **~0.09 GB (~92 MB)**
-- Longest token: `b"<|endoftext|>"` (length = 13)
+- Training time: **~7.71 minutes** (optimized with multiprocessing)
+- Memory usage: **~15.6 GB**
+- Longest token: `b' administration'`, length: 15
 
-The longest token corresponds to the special token `<|endoftext|>`, which is expected because special tokens are added directly to the vocabulary and are not affected by BPE merges.
-
+The longest token corresponds to a frequent substring in the dataset, which is expected since BPE merges commonly co-occurring byte sequences.
 
 ---
 
@@ -30,25 +39,7 @@ Profiling shows that most of the training time is spent in :
 - regex-based pre-tokenization and 
 - pair statistics operations. 
 
-In particular, regex.findall dominates preprocessing, while repeated max selection over pair counts and pair counting contribute significantly during iterative merges.
-
-```
-Ordered by: cumulative time
-
-ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-64/1    0.000    0.000    2.149    2.149 {built-in method builtins.exec}
-1    0.103    0.103    2.149    2.149 train_bpe.py:1(<module>)
-1    0.367    0.367    2.006    2.006 bpe.py:33(train_bpe)
-6458    0.013    0.000    0.511    0.000 regex.py:331(findall)
-6458    0.410    0.000    0.410    0.000 {method 'findall' of '_regex.Pattern' objects}
-5715/5714    0.174    0.000    0.346    0.000 {built-in method builtins.max}
-243    0.247    0.001    0.247    0.001 bpe.py:93(<listcomp>)
-1    0.000    0.000    0.220    0.220 __init__.py:587(__init__)
-1    0.000    0.000    0.220    0.220 __init__.py:660(update)
-1    0.220    0.220    0.220    0.220 {built-in method _collections._count_elements}
-737228    0.172    0.000    0.172    0.000 bpe.py:101(<lambda>)
-51640    0.164    0.000    0.164    0.000 bpe.py:10(count_pairs)
-```
+This indicates that pretokenization is the primary CPU bottleneck in small-to-medium datasets, making it highly suitable for multiprocessing.
 
 ---
 
@@ -58,6 +49,7 @@ ncalls  tottime  percall  cumtime  percall filename:lineno(function)
 - Using `word_freq` significantly reduces redundant computation compared to naive corpus-level updates.
 - Learned tokens tend to reflect common natural language patterns in stories.
 
+
 ---
 
 ## OpenWebText (OWT)
@@ -66,15 +58,33 @@ ncalls  tottime  percall  cumtime  percall filename:lineno(function)
 
 - Vocabulary size: 32,000
 - Special tokens: `<|endoftext|>`
-- Implementation: same as TinyStories
+- Implementation: streaming-based preprocessing to avoid loading the entire corpus into memory
+
+---
+
+### Output
+
+```
+[OWT] Stage 1: initialize vocab
+[OWT] Stage 1 done
+[OWT] Stage 2: streaming word_freq
+[OWT] Stage 2 done: 6601892 unique words
+[OWT] Stage 3: BPE merge loop
+[OWT] Stage 3 done
+[OWT] Training time: 74.11 minutes
+[OWT] Peak memory: 6135.20 MB
+[OWT] Longest token: b' administration' length: 15
+```
 
 ---
 
 ### Results
 
-- Longest token: `b"..."`
+- Training time: **~74 minutes**
+- Memory usage: **~6.1 GB**
+- Longest token: `b' administration'`, length: 15
 
-The longest token often corresponds to web-specific patterns such as URLs, HTML fragments, or code-like text, which reflects the noisy and diverse nature of web data.
+The longest token corresponds to common substrings in web-scale text, reflecting frequent patterns in natural language.
 
 ---
 
@@ -82,7 +92,19 @@ The longest token often corresponds to web-specific patterns such as URLs, HTML 
 
 Compared to TinyStories:
 
-- TinyStories produces cleaner, word-like tokens (e.g., common phrases in narratives)
-- OpenWebText produces more diverse tokens including punctuation, URLs, and markup-like patterns
+- Unlike TinyStories, the bottleneck shifts from pretokenization to:
+    
+    1. Large-scale word_freq construction
+	1. Expensive BPE merge loop over a much larger vocabulary space
+	1. Loading the entire dataset at once is infeasible due to memory constraints.
 
-This demonstrates that the learned tokenizer is highly dependent on the underlying data distribution.
+- Therefore, streaming preprocessing is necessary to incrementally build word_freq without exceeding RAM limits.
+
+--- 
+
+### Observation
+
+- Multiprocessing significantly accelerates pretokenization in TinyStories (~50 min → ~7 min).
+- Streaming is essential for OWT to prevent memory overflow during preprocessing.
+- For smaller datasets, CPU-bound preprocessing dominates and benefits from multiprocessing.
+- For large datasets, memory and algorithmic complexity become the primary bottlenecks.
