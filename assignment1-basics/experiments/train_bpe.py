@@ -91,6 +91,7 @@ if __name__ == "__main__":
     # print("[TS] Longest token:", longest, "length:", len(longest))
 
     # # save vocab and merges 
+    # # JSON cannot store bytes, use latin1 to transfer bytes to string
     # with open("./experiments/ts/vocab.json", "w", encoding="utf-8") as f:
     #     json.dump(
     #         {str(k): v.decode("latin1") for k, v in vocab.items()}, 
