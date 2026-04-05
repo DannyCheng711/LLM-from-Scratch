@@ -73,7 +73,7 @@ class Tokenizer:
         for part in parts:
             # 1. special tokens or part is a token in vocab 
             if part in self.special_tokens:
-                part_bytes = part.encode("utf-8")
+                part_bytes = part.encode("utf-8") # Unicode string
                 encoded_results.append(self.token_to_id[part_bytes])
                 continue
 
