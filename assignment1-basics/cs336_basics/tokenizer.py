@@ -25,7 +25,7 @@ class Tokenizer:
         self.token_to_id = {v : k for k, v in vocab.items()} # bytes -> id
         self.merges = merges
         self.merges_rank = {pair: i for i, pair in enumerate(merges)}
-        self.special_tokens = special_tokens or []
+        self.special_tokens = sorted(special_tokens or [], key=len, reverse=True)
 
         PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
         self.rx = re.compile(PAT)
@@ -33,6 +33,7 @@ class Tokenizer:
     # overloading + factory
     @classmethod
     def from_files(cls, vocab_filepath, merges_filepath, special_tokens=None):
+        # read UTF-8 file  → latin-1 str ->  encode ("latin1") → bytes
         with open(vocab_filepath, encoding="utf-8") as f: 
             raw_vocab = json.load(f)
 
@@ -128,7 +129,15 @@ class Tokenizer:
 
 
     def encode_iterable(self, iterable: Iterable[str]) -> Iterator[int]:
-        pass 
+        for iter_str in iterable:
+            token_ids = self.encode(iter_str)
+            for token_id in token_ids:
+                yield token_id
+
+
 
     def decode(self, ids: list[int]) -> str:
-        pass 
+        
+        byte_sequence = b"".join(self.vocab[id] for id in ids)
+        
+        return byte_sequence.decode("utf-8", errors="replace") # bytes -> readable str
