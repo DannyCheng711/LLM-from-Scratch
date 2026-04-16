@@ -71,20 +71,20 @@ This indicates that pretokenization is the primary CPU bottleneck in small-to-me
 [OWT] Stage 2 done: 6601892 unique words
 [OWT] Stage 3: BPE merge loop
 [OWT] Stage 3 done
-[OWT] Training time: 74.11 minutes
-[OWT] Peak memory: 6135.20 MB
-[OWT] Longest token: b' administration' length: 15
+[OWT] Training time: 491.70 minutes
+[OWT] Peak memory: 6135.18 MB
+[OWT] Longest token: b'\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82' length: 64
 ```
 
 ---
 
 ### Results
 
-- Training time: **~74 minutes**
+- Training time: **~491.7 minutes**
 - Memory usage: **~6.1 GB**
-- Longest token: `b' administration'`, length: 15
+- Longest token: `b'\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82\xc3\x83\xc3\x82' `, length: 64
 
-The longest token corresponds to common substrings in web-scale text, reflecting frequent patterns in natural language.
+The longest token appears to be a mojibake-like byte sequence, which is common in raw, unprocessed web-scale text such as OpenWebText. This reflects that the BPE tokenization process is driven purely by frequency patterns in byte sequences, rather than semantic meaning.
 
 ---
 
@@ -108,3 +108,20 @@ Compared to TinyStories:
 - Streaming is essential for OWT to prevent memory overflow during preprocessing.
 - For smaller datasets, CPU-bound preprocessing dominates and benefits from multiprocessing.
 - For large datasets, memory and algorithmic complexity become the primary bottlenecks.
+
+# Tokenizer Experiments
+
+### Sampling 10 documents 
+
+- TinyStories compression ratio: 3.8182 bytes/token
+- OpenWebText compression ratio: 4.3372 bytes/token
+
+###  Using TinyStories Tokenizer on OpenWebText
+- Using the TinyStories tokenizer on OpenWebText yields a compression ratio of 3.3047 bytes per token, which is lower compared to using the OpenWebText tokenizer. The TinyStories tokenizer is trained on simpler data and cannot effectively capture the more diverse patterns in OpenWebText.
+
+
+### Estimate the throughput 
+-  The TinyStories tokenizer achieves a throughput of approximately 1.21 MB/s, while the OpenWebText tokenizer achieves around 1.02 MB/s. At this rate, tokenizing the 825GB Pile dataset would take approximately 8.5–10 days.
+
+### Serializing the token IDs
+- uint16 is appropriate because the vocabulary size is well below 65,536, allowing each token ID to be represented within 16 bits.

@@ -40,6 +40,7 @@ class Tokenizer:
         vocab = {int(k) : v.encode("latin-1") for k, v in raw_vocab.items()} # id -> bytes
 
         merges = []
+        
         with open(merges_filepath, encoding="utf-8") as f:
             for line in f:
                 if not line.strip():

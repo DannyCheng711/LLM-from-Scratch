@@ -91,7 +91,7 @@ if __name__ == "__main__":
     # print("[TS] Longest token:", longest, "length:", len(longest))
 
     # # save vocab and merges 
-    # bytes -> decode("latin-1") -> latin-1 str ->（write file with UTF-8）-> JSON file
+    # # bytes -> decode("latin-1") -> latin-1 str ->（write file with UTF-8）-> JSON file
     # # JSON cannot store bytes, use latin1 to transfer bytes to string
     # with open("./experiments/ts/vocab.json", "w", encoding="utf-8") as f:
     #     json.dump(
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     # with open("./experiments/ts/merges.txt", "w", encoding="utf-8") as f:
     #     for a, b in merges:
-    #         f.write(f"{a.decode('latin1')} {b.decode('latin1')}\n")
+    #         f.write(json.dumps([a.decode("latin-1"), b.decode("latin-1")]) + "\n")
 
 
     # --- OpenWebText ---
@@ -151,4 +151,4 @@ if __name__ == "__main__":
 
     with open("./experiments/owt/merges.txt", "w", encoding="utf-8") as f:
         for a, b in merges:
-            f.write(f"{a.decode('latin1')} {b.decode('latin1')}\n")
+            f.write(json.dumps([a.decode("latin-1"), b.decode("latin-1")]) + "\n")
