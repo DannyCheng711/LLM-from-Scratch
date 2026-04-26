@@ -1,4 +1,4 @@
-from cs336_basics.tokenizer import Tokenizer
+from cs336_basics.bpe_tokenizer.tokenizer import Tokenizer
 import regex as re 
 import random
 import time 

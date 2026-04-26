@@ -1,6 +1,6 @@
-from cs336_basics.bpe import train_bpe, _train_bpe_from_word_freq, _initialize_bpe_training, _process_chunk
-from multiprocessing import Pool, cpu_count
-from collections import defaultdict, Counter
+from cs336_basics.bpe_tokenizer.bpe import _train_bpe_from_word_freq, _process_chunk
+from multiprocessing import Pool
+from collections import Counter
 import json 
 import time
 import tracemalloc
@@ -143,12 +143,12 @@ if __name__ == "__main__":
     print("[OWT] Longest token:", longest, "length:", len(longest))
 
     # save vocab and merges 
-    with open("./experiments/owt/vocab.json", "w", encoding="utf-8") as f:
-        json.dump(
-            {str(k): v.decode("latin1") for k, v in vocab.items()}, 
-            f, ensure_ascii=False, indent=2
-        )
+    # with open("./experiments/owt/vocab.json", "w", encoding="utf-8") as f:
+    #     json.dump(
+    #         {str(k): v.decode("latin1") for k, v in vocab.items()},
+    #         f, ensure_ascii=False, indent=2
+    #     )
 
-    with open("./experiments/owt/merges.txt", "w", encoding="utf-8") as f:
-        for a, b in merges:
-            f.write(json.dumps([a.decode("latin-1"), b.decode("latin-1")]) + "\n")
+    # with open("./experiments/owt/merges.txt", "w", encoding="utf-8") as f:
+    #     for a, b in merges:
+    #         f.write(json.dumps([a.decode("latin-1"), b.decode("latin-1")]) + "\n")

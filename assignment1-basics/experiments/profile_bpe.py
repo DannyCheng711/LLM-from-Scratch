@@ -1,4 +1,4 @@
-from cs336_basics.bpe import train_bpe
+from cs336_basics.bpe_tokenizer.bpe import train_bpe
 
 train_bpe(
     "tests/fixtures/corpus.en",
