@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterable
+from distutils.command.build import build
 from typing import IO, Any, BinaryIO
 
 import numpy.typing as npt
@@ -13,6 +14,8 @@ from cs336_basics.bpe_tokenizer.bpe import train_bpe
 from cs336_basics.bpe_tokenizer.tokenizer import Tokenizer
 
 from cs336_basics.model_architecture.linear import build_linear
+from cs336_basics.model_architecture.embedding import build_embedding
+from torch.nn.functional import embedding
 
 
 def run_linear(
@@ -58,7 +61,9 @@ def run_embedding(
         Float[Tensor, "... d_model"]: Batch of embeddings returned by your Embedding layer.
     """
 
-    raise NotImplementedError
+    embedding = build_embedding(vocab_size, d_model, weights)
+
+    return embedding(token_ids)
 
 
 def run_swiglu(

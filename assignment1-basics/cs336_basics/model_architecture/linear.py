@@ -16,7 +16,7 @@ class Linear(nn.Module):
 
         # 1. Build empty weight
         # W.shape = (out, in)
-        W = torch.empty(
+        weight = torch.empty(
             out_features, in_features, device=device, dtype=dtype)
 
         # 2. Initialize
@@ -24,9 +24,9 @@ class Linear(nn.Module):
         # σ² = 2 / (d_in + d_out)
         # σ = sqrt(2 / (d_in + d_out))
         std = (2 / (in_features + out_features)) ** 0.5
-        nn.init.trunc_normal_(W, mean=0, std= std, a=-3 * std, b=3 * std)
+        nn.init.trunc_normal_(weight, mean=0, std= std, a=-3 * std, b=3 * std)
 
-        self.W = nn.Parameter(W)
+        self.weight = nn.Parameter(weight)
 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -34,7 +34,7 @@ class Linear(nn.Module):
         Apply the linear transformation to the input.
         """
         # y = x @ W.T
-        return einsum(x, self.W, "... d_in, d_out d_in -> ... d_out")
+        return einsum(x, self.weight, "... d_in, d_out d_in -> ... d_out")
 
 
 def build_linear(in_features, out_features, weights=None, device=None, dtype=None):
@@ -43,7 +43,7 @@ def build_linear(in_features, out_features, weights=None, device=None, dtype=Non
 
     if weights is not None:
         linear.load_state_dict({
-            "W": weights.to(device=device, dtype=dtype)
+            "weight": weights.to(device=device, dtype=dtype)
         })
 
     return linear
