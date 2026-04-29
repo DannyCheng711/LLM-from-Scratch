@@ -33,7 +33,7 @@ class Linear(nn.Module):
         """
         Apply the linear transformation to the input.
         """
-        # y = x @ W.T
+        # y = x @ W.T, y = Wx
         return einsum(x, self.weight, "... d_in, d_out d_in -> ... d_out")
 
 
