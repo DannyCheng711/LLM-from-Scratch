@@ -18,8 +18,9 @@ from cs336_basics.model_architecture.embedding import build_embedding
 from cs336_basics.model_architecture.rmsnorm import build_rmsnorm
 from cs336_basics.model_architecture.feedforward import build_SwiGLU
 from cs336_basics.model_architecture.rope import RoPE
+from cs336_basics.model_architecture.softmax import  Softmax
 
-from torch.nn.functional import embedding
+from torch.nn.functional import embedding, softmax
 
 
 def run_linear(
@@ -455,7 +456,8 @@ def run_softmax(in_features: Float[Tensor, " ..."], dim: int) -> Float[Tensor, "
         Float[Tensor, "..."]: Tensor of with the same shape as `in_features` with the output of
         softmax normalizing the specified `dim`.
     """
-    raise NotImplementedError
+    softmax = Softmax(dim=dim)
+    return softmax(in_features)
 
 
 def run_cross_entropy(
