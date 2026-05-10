@@ -16,7 +16,8 @@ from cs336_basics.bpe_tokenizer.tokenizer import Tokenizer
 from cs336_basics.model_architecture.linear import build_linear
 from cs336_basics.model_architecture.embedding import build_embedding
 from cs336_basics.model_architecture.rmsnorm import build_rmsnorm
-from cs336_basics.model_architecture.feedforward import build_SwiGLU, SwiGLU
+from cs336_basics.model_architecture.feedforward import build_SwiGLU
+from cs336_basics.model_architecture.rope import RoPE
 
 from torch.nn.functional import embedding
 
@@ -218,7 +219,9 @@ def run_rope(
     Returns:
         Float[Tensor, " ... sequence_length d_k"]: Tensor with RoPEd input.
     """
-    raise NotImplementedError
+    rope = RoPE(theta, d_k, max_seq_len)
+    return rope(in_query_or_key, token_positions)
+
 
 
 def run_transformer_block(
