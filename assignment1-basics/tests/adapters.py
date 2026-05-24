@@ -19,8 +19,7 @@ from cs336_basics.model_architecture.rmsnorm import build_rmsnorm
 from cs336_basics.model_architecture.feedforward import build_SwiGLU
 from cs336_basics.model_architecture.rope import RoPE
 from cs336_basics.model_architecture.softmax import  Softmax
-
-from torch.nn.functional import embedding, softmax
+from cs336_basics.model_architecture.dot_product_attention import scaled_dot_product_attention
 
 
 def run_linear(
@@ -124,7 +123,8 @@ def run_scaled_dot_product_attention(
     Returns:
         Float[Tensor, " ... queries d_v"]: Output of SDPA
     """
-    raise NotImplementedError
+
+    return scaled_dot_product_attention(Q, K, V, mask)
 
 
 def run_multihead_self_attention(
