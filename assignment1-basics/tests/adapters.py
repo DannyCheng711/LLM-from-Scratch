@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterable
-from distutils.command.build import build
 from typing import IO, Any, BinaryIO
 
 import numpy.typing as npt
