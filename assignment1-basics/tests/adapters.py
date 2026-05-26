@@ -19,7 +19,7 @@ from cs336_basics.model_architecture.feedforward import build_SwiGLU
 from cs336_basics.model_architecture.rope import RoPE
 from cs336_basics.model_architecture.softmax import  Softmax
 from cs336_basics.model_architecture.dot_product_attention import scaled_dot_product_attention
-
+from cs336_basics.model_architecture.multihead_self_attention import build_multihead_self_attention
 
 def run_linear(
     d_in: int,
@@ -157,8 +157,10 @@ def run_multihead_self_attention(
         Float[Tensor, " ... sequence_length d_out"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    multihead_self_attention = build_multihead_self_attention(
+        d_model, num_heads, q_proj_weight, k_proj_weight, v_proj_weight, o_proj_weight)
 
+    return multihead_self_attention(in_features)
 
 def run_multihead_self_attention_with_rope(
     d_model: int,
@@ -197,7 +199,12 @@ def run_multihead_self_attention_with_rope(
         Float[Tensor, " ... sequence_length d_out"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    multi_head_attention = build_multihead_self_attention(
+        d_model, num_heads, q_proj_weight, k_proj_weight, v_proj_weight, o_proj_weight,
+        max_seq_len, theta)
+
+    return multi_head_attention(in_features, token_positions)
+
 
 
 def run_rope(
