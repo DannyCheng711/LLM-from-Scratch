@@ -25,8 +25,8 @@ class TransformerBlock(nn.Module):
             d_model=d_model, d_ff=d_ff, device=device, dtype=dtype,
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        y = x + self.attn(self.attn_norm(x))
+    def forward(self, x: torch.Tensor, token_positions: torch.Tensor | None = None) -> torch.Tensor:
+        y = x + self.attn(self.attn_norm(x), token_positions)
         z = y + self.ffn(self.ffn_norm(y))
         return z
 

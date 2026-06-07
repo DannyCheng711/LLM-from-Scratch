@@ -20,7 +20,8 @@ from cs336_basics.model_architecture.rope import RoPE
 from cs336_basics.model_architecture.softmax import  Softmax
 from cs336_basics.model_architecture.dot_product_attention import scaled_dot_product_attention
 from cs336_basics.model_architecture.multihead_self_attention import build_multihead_self_attention
-from cs336_basics.model_architecture.transfomer_block import build_transformer_block, TransformerBlock
+from cs336_basics.model_architecture.transfomer_block import build_transformer_block
+from cs336_basics.model_architecture.transformer_lm import build_transformer_lm, TransformerLM
 
 
 def run_linear(
@@ -389,7 +390,12 @@ def run_transformer_lm(
         Float[Tensor, "batch_size sequence_length vocab_size"]: Tensor with the predicted unnormalized
         next-word distribution for each token.
     """
-    raise NotImplementedError
+
+    transformer_lm =  build_transformer_lm(
+        vocab_size=vocab_size, context_length=context_length, d_model=d_model, num_layers=num_layers,
+        num_heads=num_heads, d_ff=d_ff, rope_theta=rope_theta, weights=weights)
+
+    return transformer_lm(in_indices)
 
 
 def run_rmsnorm(
