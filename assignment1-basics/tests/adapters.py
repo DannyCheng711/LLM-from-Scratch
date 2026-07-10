@@ -23,6 +23,7 @@ from cs336_basics.model_architecture.multihead_self_attention import build_multi
 from cs336_basics.model_architecture.transfomer_block import build_transformer_block
 from cs336_basics.model_architecture.transformer_lm import build_transformer_lm, TransformerLM
 from cs336_basics.trainer.adamw import AdamW
+from cs336_basics.trainer.dataloader import get_batch
 from cs336_basics.trainer.lr_scheduler import get_lr_cosine_schedule
 from cs336_basics.trainer.gradient_clipping import get_gradient_clip
 from cs336_basics.trainer.cross_entropy import cross_entropy
@@ -462,7 +463,9 @@ def run_get_batch(
         is the sampled input sequences, and the second tuple item is the corresponding
         language modeling labels.
     """
-    raise NotImplementedError
+
+    return get_batch(
+        x=dataset, batch_size=batch_size, context_length=context_length, device=device)
 
 
 def run_softmax(in_features: Float[Tensor, " ..."], dim: int) -> Float[Tensor, " ..."]:
