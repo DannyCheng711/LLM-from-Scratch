@@ -24,6 +24,7 @@ from cs336_basics.model_architecture.transfomer_block import build_transformer_b
 from cs336_basics.model_architecture.transformer_lm import build_transformer_lm, TransformerLM
 from cs336_basics.trainer.adamw import AdamW
 from cs336_basics.trainer.lr_scheduler import get_lr_cosine_schedule
+from cs336_basics.trainer.gradient_clipping import get_gradient_clip
 from cs336_basics.trainer.cross_entropy import cross_entropy
 
 
@@ -509,7 +510,7 @@ def run_gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm:
 
     The gradients of the parameters (parameter.grad) should be modified in-place.
     """
-    raise NotImplementedError
+    return get_gradient_clip(parameters, max_l2_norm)
 
 
 def get_adamw_cls() -> Any:
